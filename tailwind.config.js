@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  /* tailwind와 mui의 충돌을 막기 위해 추가 */
+  /* 
+  tailwind와 mui의 충돌을 막기 위해 추가 
+  대신 이러면 tailwind 문법 쓸 때 앞에 tw-를 붙여야한다.
+  */
   corePlugins: {
     preflight: false,
   },
