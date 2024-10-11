@@ -1,10 +1,19 @@
 'use client';
 
 import * as React from 'react';
-import { AppBar, Toolbar, Button, Alert as MuiAlert, TextField, createTheme } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Alert as MuiAlert,
+  TextField,
+  createTheme,
+  CssBaseline,
+} from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import { FaBars } from 'react-icons/fa';
 import theme from './theme';
+import dateToStr from './dateUtil';
 
 const useTodoStatus = () => {
   const [todos, setTodos] = React.useState([]);
@@ -131,7 +140,7 @@ const TodoList = ({ todoStatus }) => {
   );
 };
 
-export default function App() {
+const App = () => {
   const todoState = useTodoStatus(); // 커스텀 훅
 
   const onSubmit = (e) => {
@@ -194,25 +203,22 @@ export default function App() {
       </ThemeProvider>
     </>
   );
+};
+
+export default function themeApp() {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
+  );
 }
 
-// Util
-// 날짜 객체를 인자로 받아서 문장으로 반환해주는 함수 (yyyy-MM-dd hh:mm:ss)
-function dateToStr(d) {
-  const pad = (n) => {
-    return n < 10 ? '0' + n : n;
-  };
+export default function normalApp() {
   return (
-    d.getFullYear() +
-    '-' +
-    pad(d.getMonth() + 1) +
-    '-' +
-    pad(d.getDate()) +
-    ' ' +
-    pad(d.getHours()) +
-    ':' +
-    pad(d.getMinutes()) +
-    ':' +
-    pad(d.getSeconds())
+    <ThemeProvider>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
   );
 }
