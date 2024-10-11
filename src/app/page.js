@@ -9,6 +9,7 @@ import {
   TextField,
   createTheme,
   CssBaseline,
+  Chip,
 } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import { FaBars } from 'react-icons/fa';
@@ -16,6 +17,7 @@ import theme from './theme';
 import dateToStr from './dateUtil';
 
 const useTodoStatus = () => {
+  console.log('실행 1');
   const [todos, setTodos] = React.useState([]);
   const lastTodoIdRef = React.useRef(0);
 
@@ -26,7 +28,7 @@ const useTodoStatus = () => {
       content: newContent,
       regDate: dateToStr(new Date()),
     };
-    setTodos([...todos, newTodo]);
+    setTodos((todos) => [...todos, newTodo]);
   };
   const removeTodo = (id) => {
     const newTodos = todos.filter((todo) => todo.id != id);
@@ -140,8 +142,17 @@ const TodoList = ({ todoStatus }) => {
   );
 };
 
+let AppCallCount = 0;
+
 const App = () => {
-  const todoState = useTodoStatus(); // 커스텀 훅
+  AppCallCount++;
+  console.log(`AppCallCount : ${AppCallCount}`);
+
+  const todosState = useTodoStatus(); // 커스텀 훅
+
+  React.useEffect(() => {
+    todosState.addTodo('스쿼트');
+  }, []);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -152,60 +163,60 @@ const App = () => {
       form.content.focus();
       return;
     }
-    todoState.addTodo(form.content.value);
+    todosState.addTodo(form.content.value);
     form.content.value = '';
     form.content.focus();
   };
 
   return (
     <>
-      <ThemeProvider theme={theme}>
-        <AppBar position="fixed">
-          <Toolbar>
-            <div className="tw-flex-1">
-              <FaBars onClick={() => setOpen(true)} className="tw-cursor-pointer" />
-            </div>
-            <div className="logo-box">
-              <a href="/" className="tw-font-bold">
-                로고
-              </a>
-            </div>
-            <div className="tw-flex-1 tw-flex tw-justify-end">글쓰기</div>
-          </Toolbar>
-        </AppBar>
-        <Toolbar />
-        <form className="tw-flex tw-flex-col tw-p-4 tw-gap-2" onSubmit={onSubmit}>
-          <TextField
-            name="content"
-            id="outlined-basic"
-            label="할 일 입력"
-            variant="outlined"
-            autoComplete="off"
-          />
-          <Button className="tw-text-bold" variant="contained" type="submit">
-            추가
-          </Button>
-        </form>
-        <div className="tw-mb-2">할 일 갯수 : {todoState.todos.length}</div>
-        <nav>
-          <ul>
-            {todoState.todos.map((todo) => (
-              <li className="tw-mb-3" key={todo.id}>
-                <div className="tw-flex tw-flex-col tw-gap-1">
-                  <span>번호 : {todo.id}</span>
-                  <span>날짜 : {todo.regDate}</span>
-                  <span>할 일: {todo.content}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </ThemeProvider>
+      <AppBar position="fixed">
+        <Toolbar>
+          <div className="tw-flex-1">
+            <FaBars onClick={() => setOpen(true)} className="tw-cursor-pointer" />
+          </div>
+          <div className="logo-box">
+            <a href="/" className="tw-font-bold">
+              로고
+            </a>
+          </div>
+          <div className="tw-flex-1 tw-flex tw-justify-end">글쓰기</div>
+        </Toolbar>
+      </AppBar>
+      <Toolbar />
+      <form className="tw-flex tw-flex-col tw-p-4 tw-gap-2" onSubmit={onSubmit}>
+        <TextField
+          name="content"
+          id="outlined-basic"
+          label="할 일 입력"
+          variant="outlined"
+          autoComplete="off"
+        />
+        <Button className="tw-text-bold" variant="contained" type="submit">
+          추가
+        </Button>
+      </form>
+      <div className="tw-mb-2">할 일 갯수 : {todosState.todos.length}</div>
+      <nav>
+        <ul>
+          {todosState.todos.map((todo) => (
+            <li className="tw-mb-3" key={todo.id}>
+              <div className="tw-flex tw-flex-col tw-gap-1 tw-mb-[30px]">
+                <Chip label={`번호 : ${todo.id}`} variant="outlined"></Chip>
+                <Chip label={`날짜 : ${todo.regDate}`} variant="outlined"></Chip>
+                <Chip label={`할 일 : ${todo.content}`} variant="outlined"></Chip>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </>
   );
 };
 
 export default function themeApp() {
+  console.log('실행 2');
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -214,11 +225,8 @@ export default function themeApp() {
   );
 }
 
-export default function normalApp() {
-  return (
-    <ThemeProvider>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  );
-}
+// export default function normalApp() {
+//   return (
+//       <App />
+//   );
+// }
