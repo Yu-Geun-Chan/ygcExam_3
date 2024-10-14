@@ -7,16 +7,17 @@ import {
   Button,
   Alert as MuiAlert,
   TextField,
-  createTheme,
   CssBaseline,
   Chip,
+  Box,
 } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
-import { FaBars } from 'react-icons/fa';
-import theme from './theme';
+import classNames from 'classnames';
+import { FaBars, FaCheck, FaEllipsisV } from 'react-icons/fa';
 import dateToStr from './dateUtil';
+import RootTheme from './theme';
 
-const useTodoStatus = () => {
+function useTodoStatus() {
   console.log('실행 1');
   const [todos, setTodos] = React.useState([]);
   const lastTodoIdRef = React.useRef(0);
@@ -28,7 +29,7 @@ const useTodoStatus = () => {
       content: newContent,
       regDate: dateToStr(new Date()),
     };
-    setTodos((todos) => [...todos, newTodo]);
+    setTodos((todos) => [newTodo, ...todos]);
   };
   const removeTodo = (id) => {
     const newTodos = todos.filter((todo) => todo.id != id);
@@ -44,7 +45,7 @@ const useTodoStatus = () => {
     removeTodo,
     modifyTodo,
   };
-};
+}
 
 const NewTodoForm = ({ todoStatus }) => {
   const [newTodoContent, setNewTodoContent] = useState('');
@@ -144,7 +145,7 @@ const TodoList = ({ todoStatus }) => {
 
 let AppCallCount = 0;
 
-const App = () => {
+function App() {
   AppCallCount++;
   console.log(`AppCallCount : ${AppCallCount}`);
 
@@ -153,7 +154,7 @@ const App = () => {
   React.useEffect(() => {
     todosState.addTodo('스쿼트');
     todosState.addTodo('벤치프레스');
-    todosState.addTodo('데드리프트');
+    todosState.addTodo('데드리프트\n런지');
   }, []);
 
   const onSubmit = (e) => {
@@ -188,6 +189,8 @@ const App = () => {
       <Toolbar />
       <form className="tw-flex tw-flex-col tw-p-4 tw-gap-2" onSubmit={onSubmit}>
         <TextField
+          multiline
+          maxRows={4}
           name="content"
           id="outlined-basic"
           label="할 일 입력"
@@ -201,13 +204,37 @@ const App = () => {
       <div className="tw-mb-2">할 일 갯수 : {todosState.todos.length}</div>
       <nav>
         <ul>
-          {todosState.todos.map((todo) => (
+          {todosState.todos.map((todo, index) => (
             <li className="tw-mb-3" key={todo.id}>
-              <div className="tw-flex tw-flex-col tw-gap-1 tw-mb-[30px]">
-                <Chip label={`번호 : ${todo.id}`} variant="outlined"></Chip>
-                <Chip label={`날짜 : ${todo.regDate}`} variant="outlined"></Chip>
-                <div className="tw-p-8 tw-rounded-[15px] tw-shadow tw-whitespace-pre-wrap ">
-                  할 일 : {todo.content}
+              <div className="tw-flex tw-flex-col tw-gap-2 tw-mt-3">
+                <div className="tw-flex tw-gap-x-2 tw-font-bold">
+                  <Chip className="tw-pt-[3px]" label={`번호 : ${todo.id}`} variant="outlined" />
+                  <Chip
+                    className="tw-pt-[3px]"
+                    label={`날짜 : ${todo.regDate}`}
+                    variant="outlined"
+                    color="primary"
+                  />
+                </div>
+                <div className="tw-rounded-[10px] tw-shadow tw-flex tw-text-[14px] tw-min-h-[80px]">
+                  <Button className="tw-flex-shrink-0 tw-rounded-[10px_0_0_10px]" color="inherit">
+                    <FaCheck
+                      className={classNames(
+                        'tw-text-3xl',
+                        {
+                          'tw-text-[--mui-color-primary-main]': index % 2 == 0,
+                        },
+                        { 'tw-text-[#dcdcdc]': index % 2 != 0 },
+                      )}
+                    />
+                  </Button>
+                  <div className="tw-bg-[#dcdcdc] tw-w-[2px] tw-h-[60px] tw-self-center"></div>
+                  <div className="tw-bg-blue-300 tw-flex tw-items-center tw-p-3 tw-flex-grow hover:tw-text-[--mui-color-primary-main] tw-whitespace-pre-wrap tw-leading-relaxed tw-break-words">
+                    할 일 : {todo.content}
+                  </div>
+                  <Button className="tw-flex-shrink-0 tw-rounded-[0_10px_10px_0]" color="inherit">
+                    <FaEllipsisV className="tw-text-[#dcdcdc] tw-text-2xl" />
+                  </Button>
                 </div>
               </div>
             </li>
@@ -216,9 +243,11 @@ const App = () => {
       </nav>
     </>
   );
-};
+}
 
 export default function themeApp() {
+  const theme = RootTheme();
+
   console.log('실행 2');
 
   return (
