@@ -38,12 +38,14 @@ const lastTodoIdAtom = atom({
   default: 0,
 });
 
-function useTodoStatus() {
+function useTodosStatus() {
   const [todos, setTodos] = useRecoilState(todosAtom); // 리코일 사용
   // const [todos, setTodos] = React.useState([]);
 
   const [lastTodoId, setLastTodoId] = useRecoilState(lastTodoIdAtom);
   const lastTodoIdRef = React.useRef(lastTodoId);
+
+  lastTodoIdRef.current = lastTodoId;
 
   const addTodo = (newContent) => {
     const id = ++lastTodoIdRef.current;
@@ -105,7 +107,8 @@ function useTodoStatus() {
   };
 }
 
-const NewTodoForm = ({ todosStatus, noticeSnackbarStatus }) => {
+const NewTodoForm = ({ noticeSnackbarStatus }) => {
+  const todosStatus = useTodosStatus();
   const onSubmit = (e) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -140,7 +143,7 @@ const NewTodoForm = ({ todosStatus, noticeSnackbarStatus }) => {
     </>
   );
 };
-const TodoListItem = ({ todo, index, openDrawer, todosStatus }) => {
+const TodoListItem = ({ todo, index, openDrawer }) => {
   return (
     <>
       <li className="tw-mb-3" key={todo.id}>
@@ -219,7 +222,8 @@ function useEditTodoModalStatus() {
   };
 }
 
-function EditTodoModal({ status, todosStatus, todo, noticeSnackbarStatus }) {
+function EditTodoModal({ status, todo, noticeSnackbarStatus }) {
+  const todosStatus = useTodosStatus();
   const onSubmit = (e) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -266,7 +270,8 @@ function EditTodoModal({ status, todosStatus, todo, noticeSnackbarStatus }) {
   );
 }
 
-function TodoOptionDrawer({ status, todosStatus, noticeSnackbarStatus }) {
+function TodoOptionDrawer({ status, noticeSnackbarStatus }) {
+  const todosStatus = useTodosStatus();
   const removeTodo = () => {
     if (confirm(`${status.todoId}번 할 일을 삭제하시겠습니까?`) == false) {
       status.close();
@@ -316,7 +321,9 @@ function TodoOptionDrawer({ status, todosStatus, noticeSnackbarStatus }) {
   );
 }
 
-const TodoList = ({ todosStatus, noticeSnackbarStatus }) => {
+const TodoList = ({ noticeSnackbarStatus }) => {
+  const todosStatus = useTodosStatus();
+
   const todoOptionDrawerStatus = useTodoOptionDrawerStatus();
 
   return (
@@ -387,7 +394,7 @@ function useNoticeSnackbarStatus() {
 }
 
 function App() {
-  const todosStatus = useTodoStatus();
+  const todosStatus = useTodosStatus();
 
   const [open, setOpen] = React.useState(false);
 
@@ -421,8 +428,8 @@ function App() {
       </AppBar>
       <Toolbar />
       <NoticeSnackbar status={noticeSnackbarStatus} />
-      <NewTodoForm todosStatus={todosStatus} noticeSnackbarStatus={noticeSnackbarStatus} />
-      <TodoList todosStatus={todosStatus} noticeSnackbarStatus={noticeSnackbarStatus} />
+      <NewTodoForm noticeSnackbarStatus={noticeSnackbarStatus} />
+      <TodoList noticeSnackbarStatus={noticeSnackbarStatus} />
     </>
   );
 }
